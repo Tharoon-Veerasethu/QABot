@@ -172,8 +172,14 @@ def query_to_document(query):
 
 def document_to_paragraph(query, document):
     stop_words = set(stopwords.words("english"))
-    index = 0
     sent1 = [word for word in word_tokenize(query) if word not in stop_words]
+    tag = nltk.pos_tag(sent1)
+    words = []
+    for each_tag in tag:
+        if each_tag[1] == 'NN' or each_tag[1] == 'NNP' or each_tag[1] == 'NNS' or each_tag[1] == 'VBD' or each_tag[1] == 'VB':
+            words.append(each_tag[0])
+    sent1 = words
+    index = 0
     sentences = sent_tokenize(document)
     list_distances, list_sentence_index = [], []
     for each_sentence in sentences:
@@ -182,9 +188,9 @@ def document_to_paragraph(query, document):
         list_distances.append(similarity_distance)
         list_sentence_index.append(index)
         index+=1
-    WMD_Dataframe = pd.DataFrame({'Sentence': sentences, 'Sentence_Index': list_sentence_index, 'WMD_Score': list_distances}).sort_values(by=['WMD_Score'],ascending=True)
+    WMD_Dataframe = pd.DataFrame({'Sentence': sentences, 'Sentence_Index': list_sentence_index, 'WMD_Score': list_distances}).sort_values(by=['WMD_Score'],ascending=True) 
     Top8_sentences = ' '.join([sent for sent in WMD_Dataframe[0:8].Sentence])
-
+   
     return Top8_sentences
 
 
